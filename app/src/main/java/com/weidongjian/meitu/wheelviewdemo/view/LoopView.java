@@ -20,6 +20,9 @@ import java.util.concurrent.TimeUnit;
 /**
  * Created by Weidongjian on 2015/8/18.
  */
+/**
+ * Created by Weidongjian on 2015/8/18.
+ */
 public class LoopView extends View {
 
     private float scaleX = 1.05F;
@@ -155,7 +158,7 @@ public class LoopView extends View {
         halfCircumference = (int) (maxTextHeight * lineSpacingMultiplier * (itemsVisible - 1));
         measuredHeight = (int) ((halfCircumference * 2) / Math.PI);
         radius = (int) (halfCircumference / Math.PI);
-        measuredWidth = maxTextWidth + paddingLeft + paddingRight;
+//        measuredWidth = maxTextWidth + paddingLeft + paddingRight;
         firstLineY = (int) ((measuredHeight - lineSpacingMultiplier * maxTextHeight) / 2.0F);
         secondLineY = (int) ((measuredHeight + lineSpacingMultiplier * maxTextHeight) / 2.0F);
         if (initPosition == -1) {
@@ -398,8 +401,10 @@ public class LoopView extends View {
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+        //修改布局设置，使用view onmeasure方法，避免设置width失效
+        measuredWidth = MeasureSpec.getSize(widthMeasureSpec);
         remeasure();
-        setMeasuredDimension(measuredWidth, measuredHeight);
+        setMeasuredDimension(widthMeasureSpec, measuredHeight);
     }
 
     @Override
@@ -415,6 +420,10 @@ public class LoopView extends View {
                 break;
 
             case MotionEvent.ACTION_MOVE:
+                //屏蔽父组件的滑动事件，适用于滑动嵌套
+                if (getParent() != null) {
+                    getParent().requestDisallowInterceptTouchEvent(true);
+                }
                 float dy = previousY - event.getRawY();
                 previousY = event.getRawY();
 
